@@ -1,0 +1,21 @@
+set +h
+umask 022
+LC_ALL=POSIX
+LC_MESSAGES=C
+PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/global/bin:/opt/java/bin:/usr/local/bin
+TERM=linux
+export LC_ALL TERM HOME PATH LC_MESSAGES
+
+### aliases ###
+alias l='ls -laF --color'
+alias ll=l
+
+### show message of the day... ###
+cd $HOME ; [[ $- = *i* ]] && [ -f motd ] && cat motd
+
+### set prompt ###
+PS1="{{ USERNAME }}@\h:\w$ "
+
+### load ansible environment ###
+[ -f ansible/bin/alias.sh ] && source ansible/bin/alias.sh
+

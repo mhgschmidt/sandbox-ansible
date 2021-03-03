@@ -1,0 +1,8 @@
+---
+- hosts: all
+  gather_facts: no
+  remote_user: support
+  become: yes
+  roles:
+    - role: user-create
+

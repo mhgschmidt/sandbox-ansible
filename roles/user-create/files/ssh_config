@@ -1,0 +1,9 @@
+PreferredAuthentications=publickey,password
+ControlMaster=auto
+ControlPersist=600s
+ServerAliveInterval=60
+StrictHostKeyChecking=no
+UpdateHostKeys=no
+CheckHostIP=no
+UserKnownHostsFile=/dev/null
+LogLevel=ERROR

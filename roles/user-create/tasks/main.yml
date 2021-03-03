@@ -1,0 +1,61 @@
+- name: Add new USER ...
+  user:
+    name: "{{ USERNAME }}" 
+    comment: "neuer User {{ USERNAME }}"
+    createhome: yes
+    home: "/home/{{ USERNAME }}"
+    shell: /bin/bash
+    update_password: on_create
+    state: present
+
+- name: Set password for target user ...
+  shell: echo "{{ USERNAME }}:$(uuidgen)" | chpasswd
+
+- name: Add authorized KEYS to target user ...
+  authorized_key:
+    user: "{{ USERNAME }}"
+    state: present
+    key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+    manage_dir: yes
+
+- name: Add user to sudoers ...
+  lineinfile:
+    path: /etc/sudoers
+    line: "{{ USERNAME }} ALL=(ALL:ALL) NOPASSWD: ALL"
+    create: no
+
+- name: Copy SSH config to target user ...
+  copy:
+    src: ssh_config
+    dest: "/home/{{ USERNAME }}/.ssh/config"
+    owner: "{{ USERNAME }}"
+    group: "{{ USERNAME }}"
+    mode: 0644
+
+- name: Copy .profile to target user ...
+  template:
+    src: _profile
+    dest: "/home/{{ USERNAME }}/.profile"
+    owner: "{{ USERNAME }}"
+    group: "{{ USERNAME }}"
+    mode: 0644
+
+- name: remove some profile files...
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/home/{{ USERNAME }}/.bashrc"
+    - "/home/{{ USERNAME }}/.bash_profile"
+    - "/home/{{ USERNAME }}/.bash_logout"
+    - "/home/{{ USERNAME }}/.cshrc"
+    - "/home/{{ USERNAME }}/.tcshrc"
+
+- name: link .profile (for bash)...
+  file:
+    src:  "/home/{{ USERNAME }}/.profile"
+    dest: "/home/{{ USERNAME }}/.bashrc"
+    owner: "{{ USERNAME }}"
+    group: "{{ USERNAME }}"
+    state: link
+
